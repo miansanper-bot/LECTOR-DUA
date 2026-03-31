@@ -339,7 +339,14 @@ function silabar(w){
       else if(!n){res.push(cur);cur='';}
     }
   }
-  if(cur)res.push(cur);
+  if(cur){
+    // Consonante(s) finales sueltas → fusionar con sílaba anterior
+    if(res.length>0&&!V.includes(cur[cur.length-1]||'')){
+      res[res.length-1]+=cur;
+    } else {
+      res.push(cur);
+    }
+  }
   return res.length>1?res:[w];
 }
 
