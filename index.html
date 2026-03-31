@@ -104,60 +104,88 @@ input:focus,textarea:focus,select:focus{border-color:var(--primary)}
 .wb:nth-child(7){height:16px;animation-delay:.05s}
 @keyframes wa{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
 
-/* COACH PANEL — diseño infantil/gamer */
+/* COACH PANEL — diseño lineal infantil */
 .coach{
-  background:#fff;
-  border-radius:var(--r);
-  padding:20px;
+  background:linear-gradient(135deg,#fff7ed,#fff);
+  border-radius:24px;
+  padding:24px 20px;
   display:none;
-  box-shadow:0 8px 32px rgba(220,38,38,.15);
-  border:3px solid var(--red);
-  animation:si .3s cubic-bezier(.34,1.56,.64,1)
+  box-shadow:0 8px 32px rgba(251,146,60,.25);
+  border:3px solid #fb923c;
+  animation:si .35s cubic-bezier(.34,1.56,.64,1);
+  text-align:center;
 }
 .coach.show{display:block}
-@keyframes si{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes si{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
 
-/* Cabecera: emoji + "¡Casi!" + palabra grande */
-.coach-top{text-align:center;margin-bottom:16px}
-.coach-emoji{font-size:2.8rem;line-height:1;display:block;animation:wobble .6s ease}
-@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
-.coach-label{font-size:.8rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:4px 0}
-.coach-word{font-family:'Baloo 2',cursive;font-size:2.2rem;color:var(--red);font-weight:800;line-height:1.1}
+.coach-emoji{font-size:3rem;display:block;margin-bottom:6px;animation:wobble .5s ease}
+@keyframes wobble{0%,100%{transform:rotate(0)}30%{transform:rotate(-10deg)}70%{transform:rotate(10deg)}}
+.coach-label{font-size:.78rem;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.coach-word{
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(2rem,8vw,3rem);
+  color:#ea580c;font-weight:800;
+  line-height:1;margin-bottom:14px;
+  text-shadow:0 2px 8px rgba(234,88,12,.15);
+}
 
-/* Articulema + sílabas lado a lado */
-.coach-body{display:flex;gap:16px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-.articulema-box{flex:0 0 auto;width:96px;height:96px;border-radius:50%;background:var(--primary-l);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.articulema-box svg{width:80px;height:80px}
-
-/* Sílabas grandes */
-.syl-zone{flex:1;min-width:140px}
-.syl-hint{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.syl-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.syl{background:var(--primary-l);border:2px solid var(--primary);border-radius:10px;padding:5px 13px;font-family:'Baloo 2',cursive;font-size:1.4rem;color:var(--primary);font-weight:800;cursor:pointer;transition:.15s}
-.syl:hover{background:var(--primary);color:#fff}
+/* Sílabas */
+.syl-hint{font-size:.75rem;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.syl-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.syl{
+  background:#fff;border:2.5px solid #fb923c;border-radius:14px;
+  padding:7px 16px;font-family:'Baloo 2',cursive;
+  font-size:1.5rem;color:#ea580c;font-weight:800;
+  cursor:pointer;transition:.15s;user-select:none;
+}
+.syl:hover,.syl:active{background:#fb923c;color:#fff;transform:scale(1.08)}
 .syl.full{border-color:var(--green);color:var(--green);background:var(--green-l)}
-.syl-dot{font-size:1.4rem;color:var(--muted);font-weight:900;align-self:center}
+.syl.full:hover{background:var(--green);color:#fff}
+.syl-dot{font-size:1.6rem;color:#fb923c;font-weight:900;align-self:center;line-height:1}
 
-/* Botones de acción */
+/* Botones de acción del coach */
 .coach-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.btn-escuchar{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border:3px solid var(--primary);border-radius:30px;background:#fff;color:var(--primary);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:.18s}
-.btn-escuchar:hover{background:var(--primary);color:#fff}
-.btn-intentar{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border:none;border-radius:30px;background:var(--green);color:#fff;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:.18s;box-shadow:0 4px 14px rgba(22,163,74,.35)}
-.btn-intentar:hover{background:#15803d;transform:translateY(-1px)}
-.btn-intentar.on{background:var(--red);animation:mp 1.1s ease-in-out infinite}
-.btn-saltar{display:inline-flex;align-items:center;gap:6px;padding:11px 18px;border:2px solid #e2e8f0;border-radius:30px;background:#f8fafc;color:var(--muted);font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:.18s}
+.btn-escuchar{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;border:2.5px solid #3b82f6;border-radius:30px;
+  background:#fff;color:#3b82f6;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
+  cursor:pointer;transition:.18s;
+}
+.btn-escuchar:hover{background:#3b82f6;color:#fff}
+.btn-intentar{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 28px;border:none;border-radius:30px;
+  background:var(--green);color:#fff;
+  font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:800;
+  cursor:pointer;transition:.18s;
+  box-shadow:0 4px 16px rgba(22,163,74,.35);
+}
+.btn-intentar:hover{background:#15803d;transform:translateY(-2px)}
+.btn-intentar.on{background:var(--red);box-shadow:0 4px 16px rgba(220,38,38,.35);animation:mp 1.1s ease-in-out infinite}
+.btn-saltar{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:12px 18px;border:2px solid #e2e8f0;border-radius:30px;
+  background:#f8fafc;color:var(--muted);
+  font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:.18s;
+}
 .btn-saltar:hover{background:#e2e8f0;color:var(--text)}
 
-/* Intentos como corazones */
-.hearts{text-align:center;font-size:1.3rem;margin-bottom:8px;letter-spacing:2px}
+/* Ocultar elementos del coach antiguo que quedaron */
+.speak-btn,.retry-mic,.retry-lbl,.att-row,.coach-msg,.coach-strat,.err-badge{display:none!important}
 
-.speak-btn{display:none} /* ocultar el antiguo */
-.retry-mic{display:none}
-.retry-lbl{display:none}
-.att-row{display:none}
-.coach-msg{display:none}
-.coach-strat{display:none}
-.err-badge{display:none}
+/* Botón TTS texto completo */
+.tts-bar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.btn-tts{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border:none;border-radius:30px;
+  background:var(--footer);color:#fff;
+  font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;
+  cursor:pointer;transition:.18s;
+}
+.btn-tts:hover{background:#2d2d5e}
+.btn-tts.playing{background:var(--amber);color:#fff}
 
 /* FLASH */
 .flash{position:fixed;inset:0;background:rgba(22,163,74,.15);pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;z-index:999}
@@ -235,19 +263,11 @@ footer span{color:#fff}
 
   <!-- coach: hidden until error -->
   <div class="coach" id="coach">
-    <div class="coach-top">
-      <span class="coach-emoji" id="c-emoji">🤔</span>
-      <div class="coach-label">¡Casi! Esta es la palabra:</div>
-      <div class="coach-word" id="c-word"></div>
-    </div>
-    <div class="hearts" id="c-hearts"></div>
-    <div class="coach-body">
-      <div class="articulema-box" id="c-articulema"></div>
-      <div class="syl-zone">
-        <div class="syl-hint">Léela por partes:</div>
-        <div class="syl-row" id="c-syl"></div>
-      </div>
-    </div>
+    <span class="coach-emoji" id="c-emoji">🤔</span>
+    <div class="coach-label">¡Casi! Esta es la palabra:</div>
+    <div class="coach-word" id="c-word"></div>
+    <div class="syl-hint">Léela por partes — pulsa cada trozo para escucharlo</div>
+    <div class="syl-row" id="c-syl"></div>
     <div class="coach-actions">
       <button class="btn-escuchar" onclick="speakCurrent()">🔊 Escuchar</button>
       <button class="btn-intentar" id="retry-btn" onclick="toggleRetry()">🎤 ¡Inténtalo!</button>
@@ -267,7 +287,8 @@ footer span{color:#fff}
     </div>
   </div>
 
-  <div class="btn-row">
+  <div class="tts-bar">
+    <button class="btn-tts" id="tts-btn" onclick="toggleTTS()">🔈 Leer texto completo</button>
     <button class="btn btn-ghost btn-sm" onclick="goSetup()">↺ Cambiar texto</button>
   </div>
 </div>
@@ -685,18 +706,23 @@ function handleRetryResult(heard, alts){
   stopRetry();
 
   if(isMatch(exp, expRaw, heard, alts)){
+    // ¡Acertó! — marcar ok, ocultar coach, volver al texto
     markW(ST.idx,'ok');
     ST.ok++;ST.attempts=0;ST.inError=false;
     hideCoach();
     ST.idx++;
     updateStats();
     flashGood();
-    if(ST.idx>=ST.rawWords.length){setTimeout(showDone,500);}
-    else{markCurrent(ST.idx);setTimeout(startMainRecog,300);}
+    if(ST.idx>=ST.rawWords.length){
+      setTimeout(showDone,500);
+    } else {
+      markCurrent(ST.idx);
+      setTimeout(startMainRecog,300);
+    }
   } else {
+    // Fallo — mantener coach, actualizar
     ST.attempts++;
     showCoach(expRaw, heard, ST.errType||clasError(expRaw,h,heard));
-    setTimeout(()=>speakWord(expRaw),600);
   }
 }
 
@@ -812,113 +838,16 @@ function setMainMic(state){
 }
 function setRetryMic(on){
   const btn=document.getElementById('retry-btn');
-  const lbl=document.getElementById('retry-lbl');
-  btn.className='retry-mic'+(on?' on':'');
-  btn.textContent=on?'⏹':'🎤';
-  lbl.textContent=on?'Escuchando…':'Di solo la palabra';
+  if(!btn)return;
+  if(on){
+    btn.className='btn-intentar on';
+    btn.textContent='⏹ Escuchando…';
+  } else {
+    btn.className='btn-intentar';
+    btn.textContent='🎤 ¡Inténtalo!';
+  }
 }
 
-/* ════════════════════════════════════════════════════════
-   ARTICULEMAS SVG — posición de boca por fonema
-   Estilo cartoon simple, colores DUA
-════════════════════════════════════════════════════════ */
-const ARTICULEMAS={
-  // Vocal abierta (a)
-  a:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="18" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <ellipse cx="40" cy="52" rx="14" ry="10" fill="#dc2626" opacity=".9"/>
-    <ellipse cx="40" cy="60" rx="10" ry="4" fill="#f9a8d4" opacity=".6"/>
-    <ellipse cx="33" cy="40" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="47" cy="40" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <line x1="18" y1="44" x2="62" y2="44" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
-  </svg>`,
-  // Vocal cerrada (e/i)
-  e:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="14" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <ellipse cx="40" cy="49" rx="14" ry="5" fill="#dc2626" opacity=".9"/>
-    <ellipse cx="33" cy="40" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="47" cy="40" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <path d="M22 44 Q40 50 58 44" stroke="#d97706" stroke-width="2" fill="none" stroke-linecap="round"/>
-  </svg>`,
-  // Vocal redondeada (o/u)
-  o:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="14" ry="18" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <ellipse cx="40" cy="50" rx="8" ry="10" fill="#dc2626" opacity=".9"/>
-    <ellipse cx="33" cy="38" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="47" cy="38" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-  </svg>`,
-  // Bilabial (p/b/m) — labios cerrados
-  p:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="10" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <rect x="20" y="41" width="40" height="6" rx="3" fill="#dc2626" opacity=".85"/>
-    <ellipse cx="33" cy="38" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="47" cy="38" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <text x="40" y="68" text-anchor="middle" font-size="9" fill="#d97706" font-weight="bold">labios juntos</text>
-  </svg>`,
-  // Labiodental (f/v) — dientes sobre labio
-  f:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="13" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <rect x="28" y="38" width="24" height="8" rx="2" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="40" cy="50" rx="12" ry="4" fill="#fda4af" opacity=".8"/>
-    <text x="40" y="68" text-anchor="middle" font-size="9" fill="#d97706" font-weight="bold">dientes-labio</text>
-  </svg>`,
-  // Dental (t/d) — lengua en dientes
-  t:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="14" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <rect x="26" y="37" width="28" height="8" rx="2" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="40" cy="50" rx="16" ry="6" fill="#f87171" opacity=".85"/>
-    <path d="M28 46 Q40 42 52 46" stroke="#dc2626" stroke-width="2" fill="none"/>
-    <text x="40" y="68" text-anchor="middle" font-size="9" fill="#d97706" font-weight="bold">lengua-dientes</text>
-  </svg>`,
-  // Vibrante (r/rr) — lengua vibra
-  r:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="15" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <rect x="26" y="37" width="28" height="7" rx="2" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <path d="M24 50 Q32 44 40 50 Q48 56 56 50" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <text x="40" y="68" text-anchor="middle" font-size="9" fill="#d97706" font-weight="bold">lengua vibra</text>
-  </svg>`,
-  // Lateral (l) — aire por los lados
-  l:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="14" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <rect x="26" y="37" width="28" height="7" rx="2" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="40" cy="50" rx="10" ry="5" fill="#f87171" opacity=".85"/>
-    <path d="M22 46 Q28 50 34 46" stroke="#2563eb" stroke-width="2" fill="none" stroke-dasharray="3,2"/>
-    <path d="M46 46 Q52 50 58 46" stroke="#2563eb" stroke-width="2" fill="none" stroke-dasharray="3,2"/>
-    <text x="40" y="68" text-anchor="middle" font-size="9" fill="#d97706" font-weight="bold">aire por lados</text>
-  </svg>`,
-  // Fricativa (s/z/c) — dientes juntos
-  s:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="12" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <rect x="26" y="38" width="28" height="7" rx="1" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <path d="M26 45 Q40 41 54 45" stroke="#dc2626" stroke-width="1.5" fill="none"/>
-    <path d="M32 48 Q40 52 48 48" stroke="#2563eb" stroke-width="2" fill="none" stroke-dasharray="2,2"/>
-    <text x="40" y="68" text-anchor="middle" font-size="9" fill="#d97706" font-weight="bold">dientes juntos</text>
-  </svg>`,
-  // Default — boca neutra
-  default:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="40" cy="44" rx="22" ry="14" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
-    <ellipse cx="40" cy="49" rx="10" ry="5" fill="#dc2626" opacity=".7"/>
-    <ellipse cx="33" cy="39" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-    <ellipse cx="47" cy="39" rx="5" ry="3.5" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
-  </svg>`,
-};
-
-function getArticulema(word){
-  const w=word.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const c=w[0]||'';
-  if('aáä'.includes(c)) return ARTICULEMAS.a;
-  if('eéë'.includes(c)) return ARTICULEMAS.e;
-  if('iíï'.includes(c)) return ARTICULEMAS.e;
-  if('oóö'.includes(c)) return ARTICULEMAS.o;
-  if('uúü'.includes(c)) return ARTICULEMAS.o;
-  if('pbm'.includes(c)) return ARTICULEMAS.p;
-  if('fv'.includes(c))  return ARTICULEMAS.f;
-  if('td'.includes(c))  return ARTICULEMAS.t;
-  if(c==='r')           return ARTICULEMAS.r;
-  if(c==='l')           return ARTICULEMAS.l;
-  if('szc'.includes(c)) return ARTICULEMAS.s;
-  return ARTICULEMAS.default;
-}
 
 /* ════════════════════════════════════════════════════════
    COACH PANEL
@@ -929,19 +858,15 @@ function showCoach(expRaw, heard, errType){
 
   document.getElementById('c-word').textContent=expRaw;
 
-  // Emoji según tipo de error
   const emojiMap={
-    SILABEO:'🐢', INVERSION:'🔄', OMISION:'👀',
-    SUSTIT:'🤔', CONFBP:'👄', CONFDT:'👅',
-    CONFRL:'👂', CONFRR:'🌀'
+    SILABEO:'🐢',INVERSION:'🔄',OMISION:'👀',
+    SUSTIT:'🤔',CONFBP:'👄',CONFDT:'👅',
+    CONFRL:'👂',CONFRR:'🌀'
   };
   document.getElementById('c-emoji').textContent=
     emojiMap[errType?.key||'']||'🤔';
 
-  // Articulema
-  document.getElementById('c-articulema').innerHTML=getArticulema(expRaw);
-
-  // Sílabas — cada una pronunciable al pulsar
+  // Sílabas pulsables
   const sylDiv=document.getElementById('c-syl');
   sylDiv.innerHTML='';
   const syls=silabar(expRaw);
@@ -949,7 +874,6 @@ function showCoach(expRaw, heard, errType){
     syls.forEach((s,i)=>{
       const sp=document.createElement('span');
       sp.className='syl';sp.textContent=s;
-      sp.title='Pulsa para escuchar';
       sp.onclick=()=>speakWord(s);
       sylDiv.appendChild(sp);
       if(i<syls.length-1){
@@ -959,19 +883,18 @@ function showCoach(expRaw, heard, errType){
       }
     });
     const arr=document.createElement('span');arr.className='syl-dot';arr.textContent='→';sylDiv.appendChild(arr);
-    const full=document.createElement('span');full.className='syl full';
-    full.textContent=expRaw;full.onclick=()=>speakWord(expRaw);
+    const full=document.createElement('span');
+    full.className='syl full';full.textContent=expRaw;
+    full.onclick=()=>speakWord(expRaw);
     sylDiv.appendChild(full);
   }
 
-  // Corazones de intentos
-  const hearts=document.getElementById('c-hearts');
-  const max=3;
-  const used=Math.min(ST.attempts,max);
-  hearts.textContent='❤️'.repeat(max-used)+'🖤'.repeat(used);
+  // Botón retry: volver a estado inicial
+  const btn=document.getElementById('retry-btn');
+  btn.className='btn-intentar';
+  btn.textContent='🎤 ¡Inténtalo!';
 
-  // TTS automático
-  setTimeout(()=>speakWord(expRaw),600);
+  setTimeout(()=>speakWord(expRaw),500);
 }
 
 function hideCoach(){
@@ -1008,6 +931,46 @@ function speakWord(txt){
   window.speechSynthesis.speak(u);
 }
 function speakCurrent(){speakWord(ST.rawWords[ST.idx]||'');}
+
+let _ttsPlaying=false;
+function toggleTTS(){
+  if(_ttsPlaying){
+    window.speechSynthesis.cancel();
+    _ttsPlaying=false;
+    setTTSBtn(false);
+    return;
+  }
+  // Pausar reconocimiento mientras habla el TTS
+  const wasListening=ST.listening;
+  if(wasListening){srPause();setMainMic('paused');}
+
+  const txt=ST.rawWords.join(' ');
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='es-ES';u.rate=0.75;u.pitch=1.05;
+  const vs=window.speechSynthesis.getVoices();
+  const ev=vs.find(v=>v.lang.startsWith('es'));
+  if(ev)u.voice=ev;
+
+  _ttsPlaying=true;
+  setTTSBtn(true);
+
+  u.onend=()=>{
+    _ttsPlaying=false;
+    setTTSBtn(false);
+    // Reanudar si estaba escuchando
+    if(wasListening&&!ST.inError){
+      startMainRecog();
+    }
+  };
+  u.onerror=()=>{_ttsPlaying=false;setTTSBtn(false);};
+  window.speechSynthesis.speak(u);
+}
+function setTTSBtn(on){
+  const btn=document.getElementById('tts-btn');
+  if(!btn)return;
+  btn.className='btn-tts'+(on?' playing':'');
+  btn.textContent=on?'⏹ Parar lectura':'🔈 Leer texto completo';
+}
 
 /* ════════════════════════════════════════════════════════
    FLASH
