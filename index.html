@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LectorDUA – Práctica</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f0f7ff; --surface:#fff; --footer:#3a3a6e;
+  --primary:#2563eb; --primary-l:#dbeafe;
+  --green:#16a34a; --green-l:#dcfce7; --green-ring:#86efac;
+  --red:#dc2626;   --red-l:#fee2e2;   --red-ring:#fca5a5;
+  --amber:#d97706; --amber-l:#fef3c7;
+  --text:#1e293b;  --muted:#64748b;
+  --r:18px; --rs:10px;
+  --sh:0 4px 20px rgba(37,99,235,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+h2,h3{font-family:'Baloo 2',cursive}
+
+/* NAV */
+nav{background:var(--footer);display:flex;align-items:center;gap:12px;padding:13px 20px;flex-wrap:wrap}
+.logo{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.badge-nav{background:var(--primary);color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:20px}
+
+/* SCREENS */
+.screen{display:none;flex:1;padding:20px 18px 40px;max-width:820px;width:100%;margin:0 auto;flex-direction:column;gap:14px}
+.screen.active{display:flex}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:var(--r);padding:20px 22px;box-shadow:var(--sh)}
+.card h2{font-size:1.1rem;color:var(--footer);margin-bottom:12px}
+label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:4px;margin-top:10px}
+label:first-child{margin-top:0}
+input[type=text],select,textarea{width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:var(--rs);font-family:'Nunito',sans-serif;font-size:.93rem;color:var(--text);outline:none;transition:.2s;background:#fff}
+textarea{font-family:'Atkinson Hyperlegible',sans-serif;font-size:1.05rem;line-height:1.9;min-height:120px;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:var(--primary)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.field{flex:1;min-width:130px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.chip{background:var(--primary-l);color:var(--primary);border:none;border-radius:20px;padding:5px 13px;font-family:'Nunito',sans-serif;font-size:.79rem;font-weight:700;cursor:pointer;transition:.15s}
+.chip:hover{background:var(--primary);color:#fff}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:none;border-radius:30px;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:800;cursor:pointer;transition:.18s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-ghost{background:#f1f5f9;color:var(--muted);border:2px solid #e2e8f0}.btn-ghost:hover{background:#e2e8f0;color:var(--text)}
+.btn-red{background:var(--red);color:#fff}
+.btn-sm{padding:7px 13px;font-size:.81rem}
+.btn-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+/* MIC PERMISSION SCREEN */
+.mic-perm{text-align:center;padding:30px 20px}
+.mic-perm .icon{font-size:3.5rem;margin-bottom:14px}
+.mic-perm h2{margin-bottom:10px;color:var(--footer)}
+.mic-perm p{color:var(--muted);font-size:.92rem;line-height:1.6;margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto}
+
+/* STATUS BAR */
+.sbar{display:flex;gap:9px;flex-wrap:wrap}
+.stat{background:var(--surface);border-radius:10px;padding:8px 12px;flex:1;min-width:70px;box-shadow:var(--sh);text-align:center}
+.stat .v{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--primary);line-height:1}
+.stat .l{font-size:.67rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+/* TEXT BOX */
+.tbox{
+  background:#fffef5;border:2px solid #e5e0c0;border-radius:var(--r);
+  padding:24px 28px;
+  font-family:'Atkinson Hyperlegible',sans-serif;
+  font-size:clamp(1.2rem,3.5vw,1.6rem);
+  line-height:2.4;letter-spacing:.018em;word-spacing:.14em;
+  min-height:90px;
+}
+/* word states */
+.w{display:inline-block;border-radius:7px;padding:2px 5px;margin:0 1px;position:relative;transition:background .2s,box-shadow .2s}
+.w.pending{color:#94a3b8}
+.w.current{
+  background:var(--green-l);box-shadow:0 0 0 3px var(--green-ring);color:#14532d;
+  animation:pg 1.8s ease-in-out infinite;
+}
+@keyframes pg{0%,100%{box-shadow:0 0 0 3px var(--green-ring)}50%{box-shadow:0 0 0 7px #bbf7d080}}
+.w.current::before{content:'👆';position:absolute;top:-28px;left:50%;transform:translateX(-50%);font-size:1rem;animation:bp .9s ease-in-out infinite}
+@keyframes bp{0%,100%{top:-28px}50%{top:-35px}}
+.w.ok{background:transparent;color:var(--text)}
+.w.err{background:var(--red-l);box-shadow:0 0 0 3px var(--red-ring);color:#7f1d1d}
+.w.skipped{background:#fef9c3;color:#713f12;text-decoration:underline wavy #d97706}
+
+/* MIC BUTTON */
+.mic-zone{display:flex;flex-direction:column;align-items:center;gap:9px}
+.micbtn{width:76px;height:76px;border-radius:50%;border:none;cursor:pointer;font-size:2rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.micbtn.idle{background:var(--primary);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.35)}
+.micbtn.on{background:var(--red);color:#fff;animation:mp 1.1s ease-in-out infinite}
+.micbtn.paused{background:#9ca3af;color:#fff}
+@keyframes mp{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.45)}60%{box-shadow:0 0 0 18px rgba(220,38,38,0)}}
+.mic-lbl{font-size:.83rem;font-weight:700;color:var(--muted)}
+.mic-lbl.on{color:var(--red)}
+.wave{display:flex;align-items:center;gap:3px;height:30px;opacity:0;transition:opacity .3s}
+.wave.show{opacity:1}
+.wb{width:4px;border-radius:2px;background:var(--red);animation:wa .8s ease-in-out infinite}
+.wb:nth-child(1){height:10px;animation-delay:0s}.wb:nth-child(2){height:20px;animation-delay:.1s}
+.wb:nth-child(3){height:27px;animation-delay:.2s}.wb:nth-child(4){height:20px;animation-delay:.3s}
+.wb:nth-child(5){height:12px;animation-delay:.4s}.wb:nth-child(6){height:22px;animation-delay:.15s}
+.wb:nth-child(7){height:16px;animation-delay:.05s}
+@keyframes wa{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+
+/* COACH PANEL */
+.coach{background:var(--red-l);border-left:5px solid var(--red);border-radius:var(--r);padding:18px 20px;display:none;animation:si .3s ease}
+.coach.show{display:block}
+@keyframes si{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.coach-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.coach-word{font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--red);font-weight:800}
+.err-badge{background:var(--red);color:#fff;border-radius:20px;padding:3px 12px;font-size:.76rem;font-weight:800}
+.speak-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border:2px solid var(--primary-l);border-radius:24px;background:#fff;color:var(--primary);font-family:'Nunito',sans-serif;font-size:.86rem;font-weight:800;cursor:pointer;transition:.2s;margin-left:auto}
+.speak-btn:hover{background:var(--primary-l)}
+.coach-msg{font-size:.9rem;line-height:1.65;color:#7f1d1d;margin-bottom:12px}
+.coach-strat{background:rgba(255,255,255,.75);border-radius:var(--rs);padding:11px 14px;margin-bottom:12px;font-size:.86rem;line-height:1.65;color:var(--text)}
+.strat-lbl{font-size:.73rem;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:3px}
+.syl-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.syl{background:#fff;border:2px solid var(--red-ring);border-radius:8px;padding:3px 11px;font-family:'Baloo 2',cursive;font-size:1.25rem;color:var(--red);font-weight:800}
+.syl.full{border-color:var(--green-ring);color:var(--green);background:var(--green-l)}
+.syl-dot{font-size:1.3rem;color:var(--muted);font-weight:900}
+.att-row{display:flex;gap:5px;align-items:center;margin:8px 0}
+.dot{width:11px;height:11px;border-radius:50%;background:#e2e8f0}
+.dot.fail{background:var(--red)}.dot.ok{background:var(--green)}
+.att-lbl{font-size:.77rem;color:var(--muted);font-weight:700;margin-left:4px}
+.coach-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.retry-mic{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;font-size:1.3rem;display:flex;align-items:center;justify-content:center;background:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(37,99,235,.3)}
+.retry-mic.on{background:var(--red);animation:mp 1.1s ease-in-out infinite}
+.retry-lbl{font-size:.8rem;color:var(--muted);font-weight:700}
+
+/* FLASH */
+.flash{position:fixed;inset:0;background:rgba(22,163,74,.15);pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;z-index:999}
+.flash.show{opacity:1}
+.flash-e{font-size:4rem;animation:pp .4s ease}
+@keyframes pp{0%{transform:scale(.4)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* COMPLETE */
+.done-card{background:linear-gradient(135deg,#16a34a,#2563eb);border-radius:var(--r);padding:28px;color:#fff;text-align:center}
+.done-card h2{font-size:1.7rem;margin-bottom:6px}
+.done-card p{opacity:.85;font-size:.92rem}
+.stars{font-size:2.4rem;margin:10px 0;letter-spacing:4px}
+
+/* FOOTER */
+footer{background:var(--footer);color:rgba(255,255,255,.7);text-align:center;padding:13px;font-size:.81rem;font-weight:600;margin-top:auto}
+footer span{color:#fff}
+
+@media(max-width:540px){
+  .tbox{padding:16px 12px;font-size:1.1rem;line-height:2.1}
+  .micbtn{width:66px;height:66px;font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">📖 LectorDUA <span class="badge-nav">PRÁCTICA</span></div>
+</nav>
+
+<!-- ══ SCREEN: SETUP ══ -->
+<div class="screen active" id="s-setup">
+  <div class="card">
+    <h2>📝 Preparar la práctica</h2>
+    <div class="row">
+      <div class="field">
+        <label for="inp-nombre">Nombre del lector</label>
+        <input type="text" id="inp-nombre" placeholder="Ej: Carlos"/>
+      </div>
+      <div class="field">
+        <label for="inp-nivel">Nivel</label>
+        <select id="inp-nivel">
+          <option value="inf">Infantil (4-6 años)</option>
+          <option value="1p" selected>1.º Primaria</option>
+          <option value="2p">2.º Primaria</option>
+          <option value="3p">3.º Primaria</option>
+          <option value="4p">4.º Primaria</option>
+          <option value="5p">5.º Primaria</option>
+          <option value="6p">6.º Primaria</option>
+        </select>
+      </div>
+    </div>
+    <label>Textos de ejemplo</label>
+    <div class="chips" id="chips"></div>
+    <label for="inp-txt" style="margin-top:12px">Texto para practicar</label>
+    <textarea id="inp-txt">El sol salía despacio por detrás de las montañas. Los pájaros cantaban entre los árboles del jardín. Ana se despertó y miró por la ventana. Vio que el cielo estaba lleno de nubes blancas que corrían con el viento.</textarea>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-primary" onclick="startPractice()">▶ Comenzar práctica</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: PRÁCTICA ══ -->
+<div class="screen" id="s-practice">
+
+  <div class="sbar">
+    <div class="stat"><div class="v" id="st-ok">0</div><div class="l">Correctas</div></div>
+    <div class="stat"><div class="v" id="st-err">0</div><div class="l">Errores</div></div>
+    <div class="stat"><div class="v" id="st-pct">—</div><div class="l">Exactitud</div></div>
+    <div class="stat"><div class="v" id="st-left">—</div><div class="l">Quedan</div></div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbox" id="tbox"></div>
+  </div>
+
+  <!-- coach: hidden until error -->
+  <div class="coach" id="coach">
+    <div class="coach-head">
+      <span style="font-size:1.2rem">⚠️</span>
+      <div>
+        <div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Palabra a practicar</div>
+        <div class="coach-word" id="c-word"></div>
+      </div>
+      <span class="err-badge" id="c-type"></span>
+      <button class="speak-btn" onclick="speakCurrent()">🔊 Escuchar</button>
+    </div>
+    <div class="coach-msg" id="c-msg"></div>
+    <div class="syl-row" id="c-syl"></div>
+    <div class="coach-strat">
+      <span class="strat-lbl">💡 Estrategia</span>
+      <span id="c-strat"></span>
+    </div>
+    <div class="att-row" id="c-att"></div>
+    <div class="coach-actions">
+      <button class="retry-mic idle" id="retry-btn" onclick="toggleRetry()">🎤</button>
+      <span class="retry-lbl" id="retry-lbl">Di solo la palabra</span>
+      <button class="btn btn-ghost btn-sm" onclick="skipWord()" style="margin-left:auto">⏭ Saltar</button>
+    </div>
+  </div>
+
+  <!-- main mic (visible when not in error) -->
+  <div class="card" id="mic-card">
+    <div class="mic-zone">
+      <div class="wave" id="wave">
+        <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+        <div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div>
+      </div>
+      <button class="micbtn idle" id="mic-btn" onclick="toggleMain()">🎤</button>
+      <div class="mic-lbl" id="mic-lbl">Pulsa y lee en voz alta</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost btn-sm" onclick="goSetup()">↺ Cambiar texto</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: FIN ══ -->
+<div class="screen" id="s-done">
+  <div class="done-card">
+    <div class="stars" id="d-stars">⭐⭐⭐</div>
+    <h2>¡Muy bien, <span id="d-nombre"></span>!</h2>
+    <p id="d-msg"></p>
+  </div>
+  <div class="card">
+    <h2>📊 Resumen</h2>
+    <div class="sbar" id="d-stats" style="margin-top:8px"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="goSetup()">▶ Nueva práctica</button>
+  </div>
+</div>
+
+<div class="flash" id="flash"><div class="flash-e" id="flash-e">✅</div></div>
+
+<footer><span>GALURA &amp; Santana.</span> Todos los derechos reservados. &nbsp;·&nbsp; LectorDUA – Práctica</footer>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   TEXTOS MUESTRA
+════════════════════════════════════════════════════════ */
+const SAMPLES=[
+  {tag:'Infantil',   txt:'El gato bebe leche. El perro come pan. El niño ríe. La niña llora. Mamá abraza al bebé.'},
+  {tag:'1.º Prim.',  txt:'El sol sale por la mañana. Los pájaros cantan en el árbol. Los niños van a la escuela. La maestra los espera en la puerta.'},
+  {tag:'2.º Prim.',  txt:'En el parque hay muchos niños jugando. Unos corren por el césped verde. Otros suben y bajan por el tobogán. Las mamás los miran desde el banco.'},
+  {tag:'3.º Prim.',  txt:'La familia de Lucía viajó en tren hasta la ciudad. El paisaje cambiaba rápidamente al otro lado de la ventanilla. Pueblos pequeños desfilaban ante sus ojos.'},
+  {tag:'4.º Prim.',  txt:'Los océanos cubren más de dos tercios de la superficie terrestre. En sus profundidades viven criaturas extraordinarias. Los científicos estudian el mar para protegerlo.'},
+];
+
+/* ════════════════════════════════════════════════════════
+   SILABIFICADOR BÁSICO
+════════════════════════════════════════════════════════ */
+function silabar(w){
+  const p=w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const V='aeiou',res=[];let cur='';
+  for(let i=0;i<p.length;i++){
+    cur+=p[i];
+    if(V.includes(p[i])){
+      const n=p[i+1]||'',n2=p[i+2]||'';
+      if(!V.includes(n)&&V.includes(n2)&&n){res.push(cur);cur='';}
+      else if(!n){res.push(cur);cur='';}
+    }
+  }
+  if(cur)res.push(cur);
+  return res.length>1?res:[w];
+}
+
+/* ════════════════════════════════════════════════════════
+   ERRORES Y ESTRATEGIAS
+════════════════════════════════════════════════════════ */
+const ERR={
+  SILABEO:{lbl:'Silabeo',
+    msg:w=>`Leíste "${w}" separando las sílabas. ¡Ahora di la palabra completa de un tirón!`,
+    strat:`Pon el dedo bajo la palabra. Respira y di todas las sílabas juntas sin parar, como si llamaras a alguien por su nombre.`},
+  INVERSION:{lbl:'Inversión b/d',
+    msg:w=>`¡Ojo con las letras de "${w}"! Algunas se parecen mucho: b/d, p/q.`,
+    strat:`Truco: haz los dos puños. El puño IZQUIERDO levantado forma la "d" (el pulgar es el palo). El puño DERECHO forma la "b". Cuando dudes, ¡haz los puños!`},
+  OMISION:{lbl:'Omisión',
+    msg:w=>`Saltaste la palabra "${w}". Pon el dedo debajo antes de leer.`,
+    strat:`Lee con el dedo debajo de cada palabra. Espera a "ver" la palabra completa antes de decirla.`},
+  SUSTIT:{lbl:'Sustitución',
+    msg:(w,d)=>`Dijiste "${d}" pero la palabra es "${w}". Fíjate en cada letra.`,
+    strat:`Lee la palabra sílaba a sílaba en voz bajita, y luego dila entera. ¿Suena igual que lo que leíste?`},
+  CONFBP:{lbl:'Confusión B/P',
+    msg:w=>`B y P se parecen en "${w}". Son letras "hermanas de labios".`,
+    strat:`B y P: los dos labios se juntan. B vibra la garganta ("bbb" — pon la mano aquí), P no ("ppp"). Practica: "papá-baba-papá-baba".`},
+  CONFDT:{lbl:'Confusión D/T',
+    msg:w=>`D y T se parecen en "${w}". Son letras "dentales".`,
+    strat:`La lengua toca los dientes en las dos. T sale de golpe sin vibrar, D vibra. Mano en la garganta: "todo-dado". ¿Notas la diferencia?`},
+  CONFRL:{lbl:'Confusión R/L',
+    msg:w=>`R y L se confunden en "${w}".`,
+    strat:`L: la lengua toca detrás de los dientes y el aire sale por los lados. R: la lengua vibra rápido. Practica en ritmo: "la-ra-la-ra-la-ra".`},
+  CONFRR:{lbl:'R vibrante',
+    msg:w=>`La R de "${w}" tiene que vibrar más.`,
+    strat:`Empieza como un motor: "dr-dr-dr". Añade la vocal poco a poco: "dra–dre–dri–dro–dru". ¡Ya tienes la R fuerte!`},
+};
+
+function clasError(esp,oido,rawOido){
+  const e=norm(esp),o=norm(oido);
+  if(!o||o==='') return ERR.OMISION;
+  // silabeo: partes del transcript reconstruyen la palabra
+  const parts=(rawOido||'').split(/\s+/).map(norm);
+  if(parts.length>=2&&lev(e,parts.join(''))<=1) return ERR.SILABEO;
+  // inversión
+  const rev=e.split('').reverse().join('');
+  const swapped=e.replace(/b/g,'B').replace(/d/g,'b').replace(/B/g,'d').replace(/p/g,'P').replace(/q/g,'p').replace(/P/g,'q');
+  if(lev(rev,o)<=1||lev(swapped,o)<=1) return ERR.INVERSION;
+  // pares fonológicos
+  if(['b','p'].includes(e[0])&&['b','p'].includes(o[0])&&e[0]!==o[0]) return ERR.CONFBP;
+  if(['d','t'].includes(e[0])&&['d','t'].includes(o[0])&&e[0]!==o[0]) return ERR.CONFDT;
+  if(['r','l'].includes(e[0])&&['r','l'].includes(o[0])&&e[0]!==o[0]) return ERR.CONFRL;
+  if(e.startsWith('r')&&!o.startsWith('r')&&lev(e,o)<=2) return ERR.CONFRR;
+  return ERR.SUSTIT;
+}
+
+/* ════════════════════════════════════════════════════════
+   TEXTO UTILS
+════════════════════════════════════════════════════════ */
+function norm(s){
+  return (s||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]/g,'').trim();
+}
+function lev(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i||j));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+/* ════════════════════════════════════════════════════════
+   ESTADO
+════════════════════════════════════════════════════════ */
+const ST={
+  rawWords:[], words:[],
+  idx:0, ok:0, errs:0, skipped:0,
+  attempts:0, errType:null, inError:false,
+  // recognition — UNA SOLA instancia para toda la sesión
+  recog:null, micStream:null,
+  srActive:false,   // el SR debe estar escuchando ahora
+  listening:false,  // modo lectura continua
+  retryOn:false,    // modo retry (solo palabra objetivo)
+  watchdog:null, restartPending:false,
+  seenTranscript:'', lastResultIdx:0,
+};
+
+/* ════════════════════════════════════════════════════════
+   PERMISO DE MICRO (una sola vez)
+════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════
+   NAVEGACIÓN
+════════════════════════════════════════════════════════ */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goSetup(){pauseAll();show('s-setup');}
+
+function initChips(){
+  const c=document.getElementById('chips');
+  SAMPLES.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='chip';b.textContent=s.tag;
+    b.onclick=()=>document.getElementById('inp-txt').value=s.txt;
+    c.appendChild(b);
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   INICIAR PRÁCTICA
+════════════════════════════════════════════════════════ */
+async function startPractice(){
+  const txt=document.getElementById('inp-txt').value.trim();
+  if(!txt){alert('Escribe o selecciona un texto.');return;}
+
+  // Pedir permiso de micrófono si aún no lo tenemos
+  if(!ST.micStream){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      ST.micStream=stream;
+      startAudioKeepalive(stream);
+    }catch(e){
+      alert('Necesitamos el micrófono para escuchar la lectura. Por favor acepta el permiso.');
+      return;
+    }
+  }
+
+  ST.rawWords=txt.split(/\s+/).filter(Boolean);
+  ST.words=ST.rawWords.map(norm);
+  ST.idx=0;ST.ok=0;ST.errs=0;ST.skipped=0;
+  ST.attempts=0;ST.inError=false;ST.seenTranscript='';
+
+  renderText();
+  updateStats();
+  hideCoach();
+  show('s-practice');
+  setTimeout(startMainRecog,300);
+}
+
+/* ════════════════════════════════════════════════════════
+   RENDER TEXT
+════════════════════════════════════════════════════════ */
+function renderText(){
+  const box=document.getElementById('tbox');
+  box.innerHTML='';
+  ST.rawWords.forEach((w,i)=>{
+    const sp=document.createElement('span');
+    sp.id='w'+i;sp.textContent=w;
+    sp.className='w '+(i===0?'current':'pending');
+    box.appendChild(sp);
+    box.appendChild(document.createTextNode(' '));
+  });
+}
+function wEl(i){return document.getElementById('w'+i)}
+function markW(i,cls){const e=wEl(i);if(e)e.className='w '+cls;}
+function markCurrent(i){
+  markW(i,'current');
+  const e=wEl(i);if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+/* ════════════════════════════════════════════════════════
+   STATS
+════════════════════════════════════════════════════════ */
+function updateStats(){
+  const tot=ST.ok+ST.errs;
+  const pct=tot>0?Math.round(ST.ok/tot*100):null;
+  document.getElementById('st-ok').textContent=ST.ok;
+  document.getElementById('st-err').textContent=ST.errs;
+  document.getElementById('st-pct').textContent=pct!==null?pct+'%':'—';
+  const left=ST.rawWords.length-ST.idx;
+  document.getElementById('st-left').textContent=left>0?left:'✅';
+}
+
+/* ════════════════════════════════════════════════════════
+   MOTOR DE RECONOCIMIENTO
+
+   Arquitectura:
+   • continuous=true, interimResults=true
+   • Cada vez que llega un resultado (interim o final)
+     extraemos las NUEVAS palabras desde el último punto
+     procesado y las comparamos inmediatamente con la
+     palabra esperada — sin esperar silencio.
+   • En modo RETRY solo aceptamos la palabra objetivo
+     exacta, no avanzamos por otras palabras.
+════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════
+   AUDIO KEEPALIVE
+   Un oscilador de 0Hz conectado al micrófono real impide
+   que el navegador detecte "silencio" y corte la sesión.
+   Es el mismo truco que usan las apps de dictado profesional.
+════════════════════════════════════════════════════════ */
+let _audioCtx=null;
+let _keepAliveNode=null;
+
+function startAudioKeepalive(stream){
+  try{
+    _audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=_audioCtx.createMediaStreamSource(stream);
+    // Oscilador silencioso: frecuencia 0, ganancia mínima
+    const osc=_audioCtx.createOscillator();
+    const gain=_audioCtx.createGain();
+    osc.frequency.value=0;
+    gain.gain.value=0.00001; // inaudible pero no silencio digital
+    osc.connect(gain);
+    gain.connect(_audioCtx.destination);
+    osc.start();
+    _keepAliveNode=osc;
+    // Conectar el micro real al contexto para que el navegador
+    // no lo considere inactivo
+    src.connect(gain);
+  }catch(e){
+    console.warn('AudioContext keepalive no disponible:', e);
+  }
+}
+
+function stopAudioKeepalive(){
+  try{if(_keepAliveNode){_keepAliveNode.stop();_keepAliveNode=null;}}catch(e){}
+  try{if(_audioCtx){_audioCtx.close();_audioCtx=null;}}catch(e){}
+}
+
+/* ════════════════════════════════════════════════════════
+   MOTOR DE RECONOCIMIENTO — instancia única, sin gaps
+   Arquitectura:
+   • Una sola instancia SR que se reutiliza con .start()
+   • onend reconecta inmediatamente (<50ms)
+   • Oscilador silencioso evita corte por detección de silencio
+   • Sin watchdog externo — onend es suficiente si el audio
+     stream está vivo
+════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════
+   MOTOR SR — UNA SOLA INSTANCIA PARA TODA LA SESIÓN
+   Nunca se destruye. Nunca se recrea. Solo se pausa con
+   abort() y se reanuda con start(). Chrome no vuelve a
+   pedir permiso porque el stream del micStream sigue vivo.
+════════════════════════════════════════════════════════ */
+function buildRecog(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Usa Chrome o Edge en Android/escritorio.');return null;}
+  const r=new SR();
+  r.lang='es-ES';
+  r.continuous=true;
+  r.interimResults=true;
+  r.maxAlternatives=5;
+
+  r.onresult=e=>{
+    if(!ST.srActive)return;
+    let full='';
+    for(let i=0;i<e.results.length;i++) full+=e.results[i][0].transcript+' ';
+    full=full.trim();
+    const newPart=full.slice(ST.seenTranscript.length).trim();
+    if(!newPart)return;
+
+    const lastResult=e.results[e.results.length-1];
+    const alts=[];
+    for(let a=0;a<lastResult.length;a++)
+      lastResult[a].transcript.trim().split(/\s+/).forEach(w=>alts.push(w));
+
+    if(ST.retryOn){
+      // Modo retry: solo procesamos resultados finales
+      if(!e.results[e.results.length-1].isFinal)return;
+      const heard=newPart.split(/\s+/).filter(Boolean)[0]||'';
+      ST.seenTranscript=full;
+      handleRetryResult(heard, alts);
+    } else {
+      // Modo lectura continua
+      const newWords=newPart.split(/\s+/).filter(Boolean);
+      for(const w of newWords){
+        if(ST.idx>=ST.rawWords.length)break;
+        if(ST.inError)break;
+        matchWord(w, newPart, alts);
+      }
+    }
+  };
+
+  r.onerror=ev=>{
+    if(ev.error==='not-allowed'){
+      alert('Permiso de micrófono denegado. Recarga la página.');
+      return;
+    }
+    if(ev.error!=='no-speech'&&ev.error!=='aborted')
+      console.warn('SR:',ev.error);
+  };
+
+  r.onend=()=>{
+    // Reconectar automáticamente si debería estar escuchando
+    if(ST.srActive){
+      ST.seenTranscript='';
+      setTimeout(()=>{if(ST.srActive)try{ST.recog.start();}catch(e){}},80);
+    }
+  };
+
+  return r;
+}
+
+/* srActive = el SR debe estar escuchando en este momento
+   retryOn  = estamos en modo retry (solo palabra objetivo)
+   listening = estamos en modo lectura continua           */
+
+function ensureRecog(){
+  if(!ST.recog) ST.recog=buildRecog();
+  return ST.recog;
+}
+
+function srStart(){
+  const r=ensureRecog();
+  if(!r)return;
+  ST.srActive=true;
+  ST.seenTranscript='';
+  try{r.start();}catch(e){}
+}
+
+function srPause(){
+  ST.srActive=false;
+  if(ST.recog)try{ST.recog.abort();}catch(e){}
+}
+
+/* ── Modo lectura continua ── */
+function startMainRecog(){
+  ST.listening=true;
+  ST.retryOn=false;
+  srStart();
+  setMainMic('on');
+}
+
+function stopMainRecog(){
+  ST.listening=false;
+  ST.srActive=false;
+  if(ST.recog)try{ST.recog.abort();}catch(e){}
+  setMainMic('idle');
+}
+
+/* ── Modo retry ── */
+function startRetry(){
+  ST.retryOn=true;
+  ST.listening=false;
+  srStart();
+  setRetryMic(true);
+}
+
+function stopRetry(){
+  ST.retryOn=false;
+  ST.srActive=false;
+  if(ST.recog)try{ST.recog.abort();}catch(e){}
+  setRetryMic(false);
+}
+
+function pauseAll(){
+  ST.listening=false;
+  ST.retryOn=false;
+  srPause();
+  setMainMic('idle');
+  setRetryMic(false);
+}
+
+function clearWatchdog(){
+  if(ST.watchdog){clearTimeout(ST.watchdog);ST.watchdog=null;}
+}
+
+/* ── Resultado en modo retry ── */
+function handleRetryResult(heard, alts){
+  const exp=ST.words[ST.idx];
+  const expRaw=ST.rawWords[ST.idx];
+  const h=norm(heard);
+
+  stopRetry();
+
+  if(isMatch(exp, expRaw, heard, alts)){
+    markW(ST.idx,'ok');
+    ST.ok++;ST.attempts=0;ST.inError=false;
+    hideCoach();
+    ST.idx++;
+    updateStats();
+    flashGood();
+    if(ST.idx>=ST.rawWords.length){setTimeout(showDone,500);}
+    else{markCurrent(ST.idx);setTimeout(startMainRecog,300);}
+  } else {
+    ST.attempts++;
+    showCoach(expRaw, heard, ST.errType||clasError(expRaw,h,heard));
+    setTimeout(()=>speakWord(expRaw),600);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   MATCHING FONOLÓGICO ENRIQUECIDO
+   Comprueba si una palabra oída es aceptable para la esperada,
+   usando múltiples estrategias: exacta, Levenshtein, fonemas similares.
+════════════════════════════════════════════════════════ */
+function fonoNorm(s){
+  // Normaliza eliminando accentos y aplicando sustituciones fonológicas del español
+  return norm(s)
+    .replace(/v/g,'b')      // v/b suenan igual
+    .replace(/ll/g,'y')     // ll/y
+    .replace(/ge|gi/g,w=>w[0]==='g'?'je':'ji') // ge→je, gi→ji
+    .replace(/ce|ci/g,w=>w[0]==='c'?'se':'si') // ce→se, ci→si
+    .replace(/z/g,'s')      // z→s (seseo)
+    .replace(/h/g,'')       // h muda
+    .replace(/qu/g,'k')     // qu→k
+    .replace(/x/g,'ks');    // x→ks
+}
+
+function isMatch(exp, expRaw, heard, alts){
+  const e=norm(expRaw);
+  const ef=fonoNorm(expRaw);
+  // Probar contra la palabra oída principal y todas las alternativas
+  const candidates=[heard,...(alts||[])].map(c=>c.trim()).filter(Boolean);
+  for(const c of candidates){
+    const h=norm(c);
+    const hf=fonoNorm(c);
+    if(!h)continue;
+    // Exacta o Levenshtein ≤1 (normalizada)
+    if(e===h||lev(e,h)<=1)return true;
+    // Fonológica: comparar representación fonética
+    if(ef===hf||lev(ef,hf)<=1)return true;
+    // Levenshtein ≤2 para palabras largas (>6 letras)
+    if(e.length>6&&lev(e,h)<=2)return true;
+  }
+  return false;
+}
+
+/* ════════════════════════════════════════════════════════
+   MATCH PALABRA — el corazón del sistema
+════════════════════════════════════════════════════════ */
+function matchWord(heard, rawContext, alts){
+  if(ST.idx>=ST.rawWords.length)return;
+  const expRaw=ST.rawWords[ST.idx];
+  const exp=ST.words[ST.idx];
+  const h=norm(heard);
+
+  // ─── REPETICIÓN: el niño repite la palabra anterior ─
+  if(ST.idx>0&&norm(heard)===ST.words[ST.idx-1]){
+    // Ignorar silenciosamente — no avanzar, no dar error
+    ST.seenTranscript+=(ST.seenTranscript?' ':'')+heard;
+    return;
+  }
+
+  // ─── CORRECTO ───────────────────────────────────────
+  if(isMatch(exp, expRaw, heard, alts)){
+    ST.seenTranscript+=(ST.seenTranscript?' ':'')+heard;
+    markW(ST.idx,'ok');
+    ST.ok++;ST.attempts=0;ST.inError=false;
+    ST.idx++;
+    updateStats();flashGood();
+    if(ST.idx>=ST.rawWords.length){stopMainRecog();setTimeout(showDone,500);}
+    else markCurrent(ST.idx);
+    return;
+  }
+
+  // ─── ERROR ──────────────────────────────────────────
+  ST.seenTranscript+=(ST.seenTranscript?' ':'')+heard;
+  if(!ST.inError){
+    ST.errs++;
+    ST.errType=clasError(expRaw,h,rawContext);
+    ST.inError=true;ST.attempts=1;
+  } else {ST.attempts++;}
+
+  markW(ST.idx,'err');
+  updateStats();
+  // NO destruir el reconocedor — solo cambiar a modo retry
+  ST.listening=false;
+  ST.retryOn=false;
+  ST.srActive=false;
+  if(ST.recog)try{ST.recog.abort();}catch(e){}
+  setMainMic('idle');
+  showCoach(expRaw, heard, ST.errType);
+  setTimeout(()=>speakWord(expRaw), 700);
+}
+
+/* ════════════════════════════════════════════════════════
+   MODO RETRY
+════════════════════════════════════════════════════════ */
+function toggleRetry(){
+  if(ST.retryOn) stopRetry();
+  else startRetry();
+}
+
+/* ════════════════════════════════════════════════════════
+   UI CONTROLS
+════════════════════════════════════════════════════════ */
+function toggleMain(){
+  if(ST.listening) stopMainRecog();
+  else startMainRecog();
+}
+function setMainMic(state){
+  const btn=document.getElementById('mic-btn');
+  const lbl=document.getElementById('mic-lbl');
+  const wave=document.getElementById('wave');
+  btn.className='micbtn '+state;
+  btn.textContent=state==='on'?'⏸':'🎤';
+  lbl.textContent=state==='on'?'Escuchando… (pulsa para pausar)':'Pausa — pulsa para continuar';
+  lbl.className='mic-lbl'+(state==='on'?' on':'');
+  wave.className='wave'+(state==='on'?' show':'');
+}
+function setRetryMic(on){
+  const btn=document.getElementById('retry-btn');
+  const lbl=document.getElementById('retry-lbl');
+  btn.className='retry-mic'+(on?' on':'');
+  btn.textContent=on?'⏹':'🎤';
+  lbl.textContent=on?'Escuchando…':'Di solo la palabra';
+}
+
+/* ════════════════════════════════════════════════════════
+   COACH PANEL
+════════════════════════════════════════════════════════ */
+function showCoach(expRaw, heard, errType){
+  document.getElementById('coach').classList.add('show');
+  document.getElementById('mic-card').style.display='none'; // ocultar mic principal
+
+  document.getElementById('c-word').textContent=expRaw;
+  document.getElementById('c-type').textContent=errType.lbl;
+
+  // mensaje
+  const fn=errType.msg;
+  const msg=typeof fn==='function'
+    ?(errType===ERR.SUSTIT?fn(expRaw,heard):fn(expRaw))
+    :fn;
+  document.getElementById('c-msg').textContent=msg;
+
+  // estrategia
+  document.getElementById('c-strat').textContent=errType.strat;
+
+  // sílabas
+  const sylDiv=document.getElementById('c-syl');
+  sylDiv.innerHTML='';
+  const syls=silabar(expRaw);
+  if(syls.length>1){
+    syls.forEach((s,i)=>{
+      const sp=document.createElement('span');sp.className='syl';sp.textContent=s;sylDiv.appendChild(sp);
+      if(i<syls.length-1){const d=document.createElement('span');d.className='syl-dot';d.textContent='·';sylDiv.appendChild(d);}
+    });
+    const arrow=document.createElement('span');arrow.className='syl-dot';arrow.textContent='→';sylDiv.appendChild(arrow);
+    const full=document.createElement('span');full.className='syl full';full.textContent=expRaw;sylDiv.appendChild(full);
+  }
+
+  // dots intentos
+  const attDiv=document.getElementById('c-att');
+  attDiv.innerHTML='';
+  for(let i=0;i<Math.min(ST.attempts,8);i++){
+    const d=document.createElement('div');d.className='dot fail';attDiv.appendChild(d);
+  }
+  if(ST.attempts>0){
+    const l=document.createElement('span');l.className='att-lbl';
+    l.textContent=ST.attempts===1?'1.er intento':`${ST.attempts} intentos`;
+    attDiv.appendChild(l);
+  }
+}
+
+function hideCoach(){
+  document.getElementById('coach').classList.remove('show');
+  document.getElementById('mic-card').style.display=''; // restaurar mic principal
+}
+
+/* ════════════════════════════════════════════════════════
+   SKIP
+════════════════════════════════════════════════════════ */
+function skipWord(){
+  stopRetry();stopMainRecog();
+  markW(ST.idx,'skipped');
+  ST.skipped++;
+  ST.inError=false;ST.attempts=0;
+  ST.idx++;
+  updateStats();
+  hideCoach();
+  if(ST.idx>=ST.rawWords.length){showDone();}
+  else{markCurrent(ST.idx);setTimeout(startMainRecog,400);}
+}
+
+/* ════════════════════════════════════════════════════════
+   TTS
+════════════════════════════════════════════════════════ */
+function speakWord(txt){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='es-ES';u.rate=0.8;u.pitch=1.05;
+  const vs=window.speechSynthesis.getVoices();
+  const ev=vs.find(v=>v.lang.startsWith('es'));
+  if(ev)u.voice=ev;
+  window.speechSynthesis.speak(u);
+}
+function speakCurrent(){speakWord(ST.rawWords[ST.idx]||'');}
+
+/* ════════════════════════════════════════════════════════
+   FLASH
+════════════════════════════════════════════════════════ */
+const EMOJIS=['✅','🌟','👏','🎯','💪','🥳','🎉','⭐','🦁','🚀'];
+function flashGood(){
+  const f=document.getElementById('flash');
+  document.getElementById('flash-e').textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+  f.classList.add('show');
+  setTimeout(()=>f.classList.remove('show'),480);
+}
+
+/* ════════════════════════════════════════════════════════
+   FIN DE SESIÓN
+════════════════════════════════════════════════════════ */
+function showDone(){
+  const tot=ST.rawWords.length;
+  const pct=Math.round(ST.ok/tot*100);
+  const stars=pct>=95?'⭐⭐⭐':pct>=80?'⭐⭐':'⭐';
+  document.getElementById('d-stars').textContent=stars;
+  const n=document.getElementById('inp-nombre').value||'lector/a';
+  document.getElementById('d-nombre').textContent=n;
+  document.getElementById('d-msg').textContent=
+    pct>=95?`¡Lectura perfecta! ${pct}% de aciertos. ¡Eres un campeón!`
+   :pct>=80?`¡Muy buen trabajo! ${pct}% de exactitud. Sigue practicando.`
+   :`Terminamos con ${pct}% de aciertos. ¡La práctica hace al maestro!`;
+  const sc=document.getElementById('d-stats');
+  sc.innerHTML='';
+  [{v:ST.ok,l:'Correctas'},{v:ST.errs,l:'Con error'},{v:ST.skipped,l:'Saltadas'},{v:pct+'%',l:'Exactitud'}]
+    .forEach(s=>{
+      const d=document.createElement('div');d.className='stat';
+      d.innerHTML=`<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
+      sc.appendChild(d);
+    });
+  show('s-done');
+}
+
+/* ════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════ */
+initChips();
+if(window.speechSynthesis){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>
